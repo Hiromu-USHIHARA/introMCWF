@@ -62,6 +62,11 @@ The example files demonstrate different aspects of the simulation:
 
 - Julia 1.6 or higher
 
+## References
+
+1. H.-P. Breuer and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, Oxford, 2002).
+2. A. J. Daley, "Quantum trajectories and open many-body quantum systems", Advances in Physics 63, 77-149 (2014).
+
 ---
 
 *This README was generated with the assistance of GPT-4 to ensure clear and comprehensive documentation.* 
