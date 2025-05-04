@@ -42,5 +42,5 @@ std_Pe = [std(all_Pe[i,:])/sqrt(n_samples) for i in 1:length(ts)]
 fig = plot(ts, avg_Pe, ribbon=std_Pe, fillalpha=0.5, lw=2, label="MCWF ($n_samples samples)")
 plot!(ts, Pe_ED, label="ED", lw=2, ls=:dash, xlabel=L"\Omega t", ylabel=L"P_{\mathrm{e}}")
 hline!([steadyPe(params)], label="steady state", ls=:dash)
-savefig(fig, "fig4_ED_vs_MCWF.pdf")
-savefig(fig, "fig4_ED_vs_MCWF.png")
+savefig(fig, "../assets/fig4_ED_vs_MCWF.pdf")
+savefig(fig, "../assets/fig4_ED_vs_MCWF.png")
