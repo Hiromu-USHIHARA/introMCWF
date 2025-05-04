@@ -35,19 +35,19 @@ The project focuses on simulating open quantum systems, where quantum systems in
 The following figures demonstrate the simulation results:
 
 ### Figure 1: Exact Diagonalization
-![ED Results](assets/fig1_ED.pdf)
+![ED Results](assets/fig1_ED.png)
 *Time evolution of quantum state using exact diagonalization*
 
 ### Figure 2: MCWF Sample Trajectories
-![MCWF Samples](assets/fig2_MCWF_samples.pdf)
+![MCWF Samples](assets/fig2_MCWF_samples.png)
 *Individual quantum trajectories from MCWF simulations*
 
 ### Figure 3: MCWF Ensemble Average
-![MCWF Average](assets/fig3_MCWF_average.pdf)
+![MCWF Average](assets/fig3_MCWF_average.png)
 *Ensemble average of multiple MCWF trajectories*
 
 ### Figure 4: Comparison between ED and MCWF
-![ED vs MCWF](assets/fig4_ED_vs_MCWF.pdf)
+![ED vs MCWF](assets/fig4_ED_vs_MCWF.png)
 *Comparison of results between ED and MCWF methods*
 
 ## Usage

@@ -1,5 +1,5 @@
-include("ED.jl")
-include("model.jl")
+include("../src/ED.jl")
+include("../src/model.jl")
 
 using Main.sparse_Liouville_space
 
@@ -24,3 +24,4 @@ using Plots, LaTeXStrings
 fig=plot(ts, real.([ρs[i][1,1] for i ∈ 1:length(ts)]), xlabel=L"\Omega t", ylabel=L"\rho_{11}", label="ED", ylims=(0,1), lw=2)
 hline!(fig, [steadyPe(params)], label="", ls=:dash)
 savefig(fig, "fig1_ED.pdf")
+savefig(fig, "fig1_ED.png")

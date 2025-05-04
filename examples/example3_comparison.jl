@@ -1,6 +1,6 @@
-include("ED.jl")
-include("MCWF.jl")
-include("model.jl")
+include("../src/ED.jl")
+include("../src/MCWF.jl")
+include("../src/model.jl")
 
 using Main.sparse_Liouville_space, Statistics, Plots, LaTeXStrings
 
@@ -43,3 +43,4 @@ fig = plot(ts, avg_Pe, ribbon=std_Pe, fillalpha=0.5, lw=2, label="MCWF ($n_sampl
 plot!(ts, Pe_ED, label="ED", lw=2, ls=:dash, xlabel=L"\Omega t", ylabel=L"P_{\mathrm{e}}")
 hline!([steadyPe(params)], label="steady state", ls=:dash)
 savefig(fig, "fig4_ED_vs_MCWF.pdf")
+savefig(fig, "fig4_ED_vs_MCWF.png")
