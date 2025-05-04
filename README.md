@@ -1,0 +1,66 @@
+# Quantum System Simulation using MCWF Method
+
+This project implements numerical simulations of quantum systems using two different approaches:
+- Monte Carlo Wave Function (MCWF) method
+- Exact Diagonalization (ED) method
+
+## Overview
+
+The project demonstrates the simulation of quantum systems with dissipation, comparing the results from both MCWF and ED methods. The MCWF method provides a stochastic approach to quantum dynamics, while ED offers an exact solution for comparison.
+
+### Key Features
+- Implementation of MCWF method for open quantum systems
+- Exact diagonalization for benchmarking
+- Visualization of quantum trajectories and ensemble averages
+- Comparison between stochastic and exact methods
+
+## Project Structure
+
+```
+.
+├── src/           # Main source code
+│   ├── MCWF.jl    # MCWF method implementation
+│   ├── ED.jl      # ED method implementation
+│   └── model.jl   # Model definition
+├── examples/      # Usage examples
+│   ├── example1_ED.jl
+│   ├── example2_MCWF.jl
+│   └── example3_comparison.jl
+└── assets/        # Figures and visualizations
+```
+
+## Results
+
+The following figures demonstrate the simulation results:
+
+### Figure 1: Exact Diagonalization
+![ED Results](assets/fig1_ED.pdf)
+*Time evolution of quantum state using exact diagonalization*
+
+### Figure 2: MCWF Sample Trajectories
+![MCWF Samples](assets/fig2_MCWF_samples.pdf)
+*Individual quantum trajectories from MCWF simulations*
+
+### Figure 3: MCWF Ensemble Average
+![MCWF Average](assets/fig3_MCWF_average.pdf)
+*Ensemble average of multiple MCWF trajectories*
+
+### Figure 4: Comparison between ED and MCWF
+![ED vs MCWF](assets/fig4_ED_vs_MCWF.pdf)
+*Comparison of results between ED and MCWF methods*
+
+## Usage
+
+The example files demonstrate different aspects of the simulation:
+
+1. `examples/example1_ED.jl`: Basic usage of ED method
+2. `examples/example2_MCWF.jl`: Basic usage of MCWF method
+3. `examples/example3_comparison.jl`: Comparison between both methods
+
+## Requirements
+
+- Julia 1.6 or higher
+
+---
+
+*This README was generated with the assistance of GPT-4 to ensure clear and comprehensive documentation.* 
