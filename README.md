@@ -1,18 +1,19 @@
 # Quantum System Simulation using MCWF Method
 
-This project implements numerical simulations of quantum systems using two different approaches:
+This project implements numerical simulations of open quantum systems using two different approaches:
 - Monte Carlo Wave Function (MCWF) method
 - Exact Diagonalization (ED) method
 
 ## Overview
 
-The project demonstrates the simulation of quantum systems with dissipation, comparing the results from both MCWF and ED methods. The MCWF method provides a stochastic approach to quantum dynamics, while ED offers an exact solution for comparison.
+The project focuses on simulating open quantum systems, where quantum systems interact with their environment, leading to dissipation and decoherence. We compare the results from both MCWF and ED methods to study the dynamics of these systems. The MCWF method provides a stochastic approach to quantum dynamics, particularly useful for open quantum systems, while ED offers an exact solution for benchmarking.
 
 ### Key Features
-- Implementation of MCWF method for open quantum systems
-- Exact diagonalization for benchmarking
+- Implementation of MCWF method for open quantum systems with dissipation
+- Exact diagonalization for benchmarking and validation
 - Visualization of quantum trajectories and ensemble averages
 - Comparison between stochastic and exact methods
+- Study of decoherence and dissipation effects in quantum systems
 
 ## Project Structure
 
