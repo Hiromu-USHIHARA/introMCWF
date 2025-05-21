@@ -10,7 +10,7 @@
 開放量子系の記述として広く用いられているものに，Gorini--Kossakowski--Sudarshan--Lindblad方程式（GKSL方程式）があります^[適当な仮定のもとで開放量子系のダイナミクスがGKSL方程式に従うことが示されます．]:
 
 $$
-\frac{d\rho}{dt} = -i\left[H, \rho\right]_- + \sum_i \left( L_i \rho L_i^\dagger - \frac{1}{2}\left[L_i^\dagger L_i, \rho\right]_+ \right)
+\frac{d\rho}{dt} = -i \left[ H, \rho \right]_- + \sum_i \left( L_i \rho L_i^\dagger - \frac{1}{2} \left[ L_i^\dagger L_i, \rho \right]_+ \right)
 $$
 
 
