@@ -1,17 +1,58 @@
-# 開放量子系の数値計算入門
+このチュートリアルでは，開放量子系の数値シミュレーション手法である厳密対角化（exact diagonalization; ED）とモンテカルロ波動関数法（Monte Carlo wave function method; MCWF）を導入し，Juliaで実装します．
 
-このチュートリアルでは，開放量子系の数値シミュレーション手法である厳密対角化（exact diagonalization; ED）とモンテカルロ波動関数法（Monte Carlo wave function method; MCWF）を導入・実装します．
+## 扱う問題
 
-## 理論的背景
-
-このチュートリアルで扱うのは開放量子系と呼ばれるタイプの物理系です．開放量子系は着目する系が外部の系に接触しているものを指します．
+このチュートリアルで扱うのは開放量子系と呼ばれるタイプの物理系です．
+開放量子系は着目する系が外部自由度と相互作用しているものを指します．
 例えば，熱浴と接触している物質や電磁場と相互作用する原子は開放量子系の例です．
 
-開放量子系の記述として広く用いられているものに，Gorini--Kossakowski--Sudarshan--Lindblad方程式（GKSL方程式）があります^[適当な仮定のもとで開放量子系のダイナミクスがGKSL方程式に従うことが示されます．]:
+開放量子系の記述として広く用いられているものに，Gorini--Kossakowski--Sudarshan--Lindblad方程式（GKSL方程式）があります^[適当な仮定のもとで開放量子系のダイナミクスがGKSL方程式に従うことが示されます．][1, 2]:
 
 $$
-\frac{d\rho}{dt} = -i \left[ H, \rho \right]_{-} + \sum_i \left( L_i \rho L_i^\dagger - \frac{1}{2} \left[ L_i^\dagger L_i, \rho \right]_{+} \right)
+\frac{d\rho}{dt} = -i \left[ H, \rho(t) \right]_{-} + \sum_i \left( L_i \rho L_i^\dagger - \frac{1}{2} \left[ L_i^\dagger L_i, \rho \right]_{+} \right).
 $$
+
+ここで，$\rho$は着目する部分系の密度行列，$H$は着目系のHamiltonian，$L_i$はLindbladianと呼ばれる演算子で，$[A, B]_\pm=AB\pm BA$は（反）交換子です．
+
+以下では，GKSL方程式で記述される開放量子系に注目して，その数値計算手法を解説します．
+特に具体例として，以下で定義される電磁場と結合した二準位系を扱います:
+
+$$H=-\dfrac{\Omega}{2}\sigma_{\mathrm x}-\Delta\sigma_+\sigma_-,$$
+$$L=\sqrt\Gamma\sigma_-.$$
+
+## モデルの定義
+
+まず，`model.jl`というファイルを作成して，２つの手法に共通のモデル定義を行います．
+
+```julia
+using LinearAlgebra, SparseArrays
+
+mutable struct Parameters
+    Δ::Float64
+    Γ::Float64 
+    Ω::Float64
+    
+    function Parameters(;Δ::Float64=0., Γ::Float64=1/6, Ω::Float64=1.0)
+        new(Δ, Γ, Ω)
+    end
+end
+
+σₓ = sparse(ComplexF64[0. 1.; 1. 0.])
+σ₊ = sparse(ComplexF64[0. 0.; 1. 0.])
+σ₋ = sparse(ComplexF64[0. 0.; 0. 1.])
+
+function makeHamiltonian(p::Parameters)
+    H = -p.Ω/2. * σₓ - p.Δ*σ₊*σ₋
+    return H
+end
+
+function makeLindbladian(p::Parameters)
+    L = √p.Γ * σ₋
+    return L
+end
+
+export Parameters, makeHamiltonian, makeLindbladian
+```
 
 
 
@@ -217,5 +258,7 @@ end
 - MCWF法：大規模系、物理的な解釈が重要な場合
 
 ## 参考文献
-1. H.-P. Breuer and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, Oxford, 2002).
-2. A. J. Daley, "Quantum trajectories and open many-body quantum systems", Advances in Physics 63, 77-149 (2014).
+1. G. Lindblad, "On the generators of quantum dynamical semigroups", Commun. Math. Phys. 48, 119-130 (1976).
+2. V. Gorini, A. Kossakowski, and E. C. G. Sudarshan, "Completely positive dynamical semigroups of N-level systems", J. Math. Phys. 17, 821 (1976).
+3. H.-P. Breuer and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, 2002).
+4. A. J. Daley, "Quantum trajectories and open many-body quantum systems", Adv. in Phys. 63, 77-149 (2014).
