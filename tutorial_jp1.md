@@ -73,7 +73,7 @@ GKSL方程式は密度行列に関する方程式なので一見複雑に見え�
 
 Liouville spaceは密度行列の要素を1次元に並び替えて得られる線型空間のことです:
 
-$$\rho=\begin{pmatrix}\rho_{11}&\rho_{12}&\cdots\\\rho_{21}&\rho_{22}\\\vdots&&\ddots\end{pmatrix}\longmapsto\left|\left.\rho\right>\right>\begin{pmatrix}\rho_{11}\\\rho_{12}\\\vdots\\\rho_{21}\\\vdots\end{pmatrix}.$$
+$$\rho=\begin{pmatrix}\rho_{11}&\rho_{12}&\cdots\\\rho_{21}&\rho_{22}\\\vdots&&\ddots\end{pmatrix}\longmapsto\left|\left.\rho\right>\right>=\begin{pmatrix}\rho_{11}\\\rho_{12}\\\vdots\\\rho_{21}\\\vdots\end{pmatrix}.$$
 
 この変換に伴って超演算子の行列表現が得られます．
 例えば，GKSL方程式に現れる$L_i\rho L_i^\dag$という項は，
