@@ -24,6 +24,8 @@ $$L=\sqrt\Gamma\sigma_-.$$
 ## モデルの定義
 
 まず，`model.jl`というファイルを作成して，２つの手法に共通のモデル定義を行います．
+`steadyPe`関数は解析的に得られる定常解の表式です．
+
 
 ```julia
 using LinearAlgebra, SparseArrays
