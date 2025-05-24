@@ -1,6 +1,8 @@
 このチュートリアルでは，開放量子系の数値シミュレーション手法である厳密対角化（exact diagonalization; ED）とモンテカルロ波動関数法（Monte Carlo wave function method; MCWF）を導入し，Juliaで実装します．
 今回はNo. 1として，扱う問題の導入と厳密対角化による数値計算をおこないます．
 
+> このチュートリアルは[Zennでも公開](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b)していますので，数式がうまく表示されない場合はそちらをご覧ください．
+
 ## 扱う問題
 
 このチュートリアルで扱うのは開放量子系と呼ばれるタイプの物理系です．
