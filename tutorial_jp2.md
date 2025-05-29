@@ -7,14 +7,14 @@
 
 ## 扱う問題（再確認）
 
-このチュートリアルでは，Gorini--Kosakkowski--Sudarshan--Lindblad (GKSL)方程式[1, 2, 3]
+このチュートリアルでは，Gorini--Kosakkowski--Sudarshan--Lindblad (GKSL)方程式[1--3]
 
 $$
 \frac{d\rho}{dt} = -i \left[ H, \rho(t) \right]_{-} + \sum_i \left( L_i \rho L_i^\dagger - \frac{1}{2} \left[ L_i^\dagger L_i, \rho \right]_{+} \right).
 $$
 
 で記述される開放量子系を扱います．
-特に具体例として，以下で定義される電磁場と結合した二準位系を扱います[4]:
+特に具体例として，以下で定義される電磁場と結合した二準位系を扱います[5]:
 
 $$H=-\dfrac{\Omega}{2}\sigma_{\mathrm x}-\Delta\sigma_+\sigma_-,$$
 $$L=\sqrt\Gamma\sigma_-.$$
@@ -40,12 +40,39 @@ $$8\times2\times2^{20}\times2^{20}=16\times(2^{10})^4\gtrsim10^{13},$$
 
 ## モンテカルロ波動関数法（MCWF）
 
-そこで有効となる方法（の一つ）がMCWFです^[この記事では一次精度のMCWFのみを扱います．高次精度の方法について知りたい方は文献[4]をご参照ください．]．
+そこで有効となる方法（の一つ）がMCWF [4,5]です^[この記事では一次精度のMCWFのみを扱います．高次精度の方法について知りたい方は文献[5]をご参照ください．]．
 
 ### MCWFの手順
 
+まず，GKSL方程式を次のように書き換えます:
 
-### MCWFの原理と精度
+$$
+\frac{d\rho}{dt} = -i \left(H_{\mathrm{eff}}\rho-\rho H_{\mathrm{eff}}^\dag\right) + \sum_i L_i \rho L_i^\dagger.
+$$
+
+ここで，nonhermitian有効Hamiltonian $H_{\mathrm{eff}}$を導入しました:
+
+$$H_{\mathrm{eff}}:=H-\dfrac{1}{2}\sum_iL_i^\dag L_i.$$
+
+また，初期状態$\left|\phi(t=0)\right>$を純粋状態として用意します.
+
+すると，$\left|\phi(t)\right>$から$\left|\phi(t+\delta t)\right>$への時間発展は次の手順で決定されます．
+
+1. 有効Hamiltonian $H_{\mathrm{eff}}$による時間発展を計算します:
+    $$\left|\phi^{(1)}(t+\delta t)\right>=\left(1-iH_{\mathrm{eff}}\right)\left|\phi(t)\right>$$
+   > この状態のノルムは
+   > $$\left<\phi^{(1)}(t+\delta t)\middle|\phi^{(1)}(t+\delta t)\right>=1-\delta p+O\left(\delta t^2\right)=1-\sum_i\delta p_i+O\left(\delta t^2\right)=1-\delta t\sum_i\left\|L_i\left|\phi(t)\right>\right\|^2+O\left(\delta t^2\right)$$
+   > となります．
+2. 乱数を生成して，以下の確率的な処理を行います:
+   - 確率$1-\delta p$で
+     $$\left|\phi(t+\delta t)\right>=\dfrac{\left|\phi^{(1)}(t+\delta t)\right>}{\sqrt{1-\delta p}}$$
+   - 確率$\delta p_i/$で
+     $$\left|\phi(t+\delta t)\right>=\dfrac{L_i\left|\phi(t)\right>}{\sqrt{\delta p_i/\delta t}}$$
+    > 上のケースをnonhermitian time evolution，下のケースをjumpなどと呼ぶことがあります．
+
+これによって規格化された状態$\left|\phi(t+\delta t)\right>$が得られるので，小さな時間刻みに対してこの手順を繰り返すことで時間発展の計算が出来ます．
+
+### MCWFの統計性
 
 
 
@@ -200,6 +227,7 @@ hline!([steadyPe(params)], label="steady state", ls=:dash)
 ## 参考文献
 1. G. Lindblad, "On the generators of quantum dynamical semigroups", Commun. Math. Phys. 48, 119-130 (1976).
 2. V. Gorini, A. Kossakowski, and E. C. G. Sudarshan, "Completely positive dynamical semigroups of N-level systems", J. Math. Phys. 17, 821 (1976).
-3. H.-P. Breuer and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, 2002).
-4. A. J. Daley, "Quantum trajectories and open many-body quantum systems", Adv. in Phys. 63, 77-149 (2014).
-5. J. A. Gyamfi, "Fundamentals of quantum mechanics in Liouville space", Eur. J. Phys. 41, 063002 (2020).
+3. H.-P. Breuer, and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, 2002).
+4. J. Dailbard, Y. Castin, and K. Mølmer, "Wave-function approach to dissipative processes in quantum optics", Phys. Rev. Lett. 68, 580 (1992).
+5. A. J. Daley, "Quantum trajectories and open many-body quantum systems", Adv. in Phys. 63, 77-149 (2014).
+6. J. A. Gyamfi, "Fundamentals of quantum mechanics in Liouville space", Eur. J. Phys. 41, 063002 (2020).
