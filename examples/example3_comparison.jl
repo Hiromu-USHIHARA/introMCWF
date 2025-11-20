@@ -25,7 +25,7 @@ ts = 0:dt:tmax
 ρs = sparse_Liouville_space.time_evol_ED(H, [1.0], [L], ρ0, ts)
 Pe_ED = [real(ρ[1,1]) for ρ in ρs]
 
-# MCWFによる時間発展（100サンプル）
+# MCWFによる時間発展（1000サンプル）
 n_samples = 1000
 all_Pe = zeros(Float64, length(ts), n_samples)
 
