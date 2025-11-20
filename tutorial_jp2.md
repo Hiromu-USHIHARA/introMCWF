@@ -1,9 +1,20 @@
-この記事では，[前回](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b)に続いて，開放量子系の数値計算手法について扱います．
-特に今回はMonte Carlo Wave Function (MCWF)法の導入・実装と厳密対角化（ED）との比較を行います．
+---
+title: "開放量子系の数値計算入門（後編）"
+emoji: "📙"
+type: "tech"
+topics:
+  - "julia"
+  - "数値計算"
+  - "物理"
+  - "quantum"
+published: true
+published_at: "2025-11-20 12:01"
+---
 
-> このチュートリアルは[Zennでも公開](https://zenn.dev/hiromu_ushihara/articles/c6ef07f16666ee)していますので，数式がうまく表示されない場合はそちらをご覧ください．
+この記事では，[前編](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b)に続いて，開放量子系の数値計算手法について扱います．
+今回はMonte Carlo Wave Function (MCWF)法の導入・実装と厳密対角化（ED）との比較を行います．
 
-
+@[card](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b)
 
 ## 扱う問題（再確認）
 
@@ -40,7 +51,7 @@ $$8\times2\times2^{20}\times2^{20}=16\times(2^{10})^4\gtrsim10^{13},$$
 
 ## モンテカルロ波動関数法（MCWF）
 
-そこで有効となる方法（の一つ）がMCWF [4,5]です^[この記事では一次精度のMCWFのみを扱います．高次精度の方法について知りたい方は文献[5]をご参照ください．]．
+そこで有効となる方法（の一つ）がMCWF [4,5]です^[この記事では一次精度のMCWFのみを扱います．高次精度の方法について知りたい方は文献[5]をご参照ください．]^[MCWFはトラジェクトリー法（trajectory approach）などとも呼ばれます．]．
 
 ### MCWFの手順
 
@@ -66,21 +77,40 @@ $$H_{\mathrm{eff}}:=H-\dfrac{1}{2}\sum_iL_i^\dag L_i.$$
 2. 乱数を生成して，以下の確率的な処理を行います:
    - 確率$1-\delta p$で
      $$\left|\phi(t+\delta t)\right>=\dfrac{\left|\phi^{(1)}(t+\delta t)\right>}{\sqrt{1-\delta p}}$$
-   - 確率$\delta p_i/$で
+   - 確率$\delta p_i$で
      $$\left|\phi(t+\delta t)\right>=\dfrac{L_i\left|\phi(t)\right>}{\sqrt{\delta p_i/\delta t}}$$
     > 上のケースをnonhermitian time evolution，下のケースをjumpなどと呼ぶことがあります．
 
 これによって規格化された状態$\left|\phi(t+\delta t)\right>$が得られるので，小さな時間刻みに対してこの手順を繰り返すことで時間発展の計算が出来ます．
+こうして得られる純粋状態の時間発展をトラジェクトリーと呼びます．
 
-### MCWFの統計性
+### トラジェクトリーの統計
 
+MCWF法はあくまで純粋状態の時間発展を与えるものですので，GKSL方程式の時間発展と関連づけるには統計的な性質を見る必要があります．
+密度行列$\sigma(t):=\left|\phi(t)\right>\left<\phi(t)\right|$から$\sigma(t+\delta t)$への時間発展は統計平均を取ると，
 
+$$\overline{\sigma(t+\delta t)}=(1-\delta p)\dfrac{\left|\phi^{(1)}(t+\delta t)\right>}{\sqrt{1-\delta p}}\dfrac{\left<\phi^{(1)}(t+\delta t)\right|}{\sqrt{1-\delta p}}+\sum_i\delta p_i\dfrac{L_i\left|\phi(t)\right>}{\sqrt{\delta p_i/\delta t}}\dfrac{\left<\phi(t)\right|L_i^\dag}{\sqrt{\delta p_i/\delta t}}$$
+
+です．
+これを書き換えると，
+
+$$\overline{\sigma(t+\delta t)}=\sigma(t)-i\delta t\left(H_{\mathrm{eff}}\sigma(t)-\sigma(t)H_{\mathrm{eff}}^\dag\right)+\delta t\sum_iL_i\sigma(t)L_i^\dag$$
+
+となり，$1$次精度のGKSL方程式による時間発展と等価であることが分かります．
+
+> ここでは統計誤差については触れませんので，興味のある方は文献[5]をご覧になってください．
+
+従って，GKSL方程式を陽に解くことと，MCWF法で多数のトラジェクトリーをサンプリングして平均を取ることは同じ時間発展を記述することになります．
+これがMCWF法でGKSL方程式を解く原理になります．
 
 ### Juliaでの実装
 
-`src/MCWF.jl`
+実際に，Juliaで実装して動作を確認します．
 
-```julia
+モデルの設定ファイル`src/model.jl`は[前回の記事](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b#%E3%83%A2%E3%83%87%E3%83%AB%E3%81%AE%E5%AE%9A%E7%BE%A9)と同じもの（`src/MCWF.jl`）を使用します．
+
+
+```julia: src/MCWF.jl
 module trajectory_approach
     using LinearAlgebra, SparseArrays, Random
     # %%
@@ -91,14 +121,11 @@ module trajectory_approach
         ψs = [Vector{ComplexF64}(ψ0)]
         for i ∈ 1:(length(ts)-1)
             ψ = ψs[i]
-            # Vinvψ =  vs\ψ
-            # ψ = sum(exp(-im*dt*es[i])*Vinvψ[i]*vs[:,i] for i ∈ 1:size(vs,2))
             ψ = (I(size(H,1)) - im*dt*Heff)*ψ
             δps = [dt*real(ψs[i]'*Ls[j]'*Ls[j]*ψs[i]) for j ∈ 1:length(Ls)]
             δp = sum(δps)
             r1 = rand()
             if r1 > δp
-                # ψ = ψ/√(1-δp)
                 ψ = ψ/√(ψ'*ψ)
             else
                 r2 = rand()
@@ -113,9 +140,10 @@ module trajectory_approach
 end
 ```
 
-`examples/example2_MCWF.jl`
+まず，個別のトラジェクトリーのダイナミクスを観察します．
+`examples/example2_MCWF.jl`に以下の内容を記述します．
 
-```julia
+```julia: examples/example2_MCWF.jl
 include("../src/MCWF.jl")
 include("../src/model.jl")
 
@@ -140,11 +168,16 @@ fig=plot(ts, [abs(ψs1[i][1])^2 for i ∈ 1:length(ts)], xlabel=L"\Omega t", yla
 plot!(ts, [abs(ψs2[i][1])^2 for i ∈ 1:length(ts)], label="MCWF (sample 2)", ylims=(0,1), lw=2)
 hline!(fig, [steadyPe(params)], label="", ls=:dash)
 ```
+
+実行結果は以下のようになります．
+連続的な発展（nonhermitian time evolution）と不連続な飛び（jump）からトラジェクトリーが構成されていることが分かります．
+
 ![](https://storage.googleapis.com/zenn-user-upload/f2a2539f23da-20250529.png)
 
+さらに統計平均と誤差の評価を行います．
+`examples/example2_MCWF.jl`に以下の内容を追加します．
 
-```
-# examples/example2_MCWF.jl
+```julia: examples/example2_MCWF.jl
 # 100サンプルの実行と平均の計算
 n_samples = 100
 tmax=40
@@ -167,13 +200,18 @@ fig2=plot(ts, avg_Pe, ribbon=std_Pe, fillalpha=0.5, label="MCWF (average of $n_s
 hline!(fig2, [steadyPe(params)], label="", ls=:dash)
 ```
 
+実行結果は下のようになります．
+理論的に予測される定常値に向かって緩和していく様子が観察されます．
+
 ![](https://storage.googleapis.com/zenn-user-upload/36dd0035db02-20250529.png)
 
 ## EDとMCWFの比較
 
-`examples/example3_comparison.jl`
+最後に，MCWF法とGKSL方程式の等価性の確認として，EDと比較を行います．
+`examples/example3_comparison.jl`ファイルに以下の内容を記述します．
+ここでは1000トラジェクトリーの平均を取って比較します．
 
-```julia
+```julia: examples/example3_comparison.jl
 include("../src/ED.jl")
 include("../src/MCWF.jl")
 include("../src/model.jl")
@@ -201,7 +239,7 @@ ts = 0:dt:tmax
 ρs = sparse_Liouville_space.time_evol_ED(H, [1.0], [L], ρ0, ts)
 Pe_ED = [real(ρ[1,1]) for ρ in ρs]
 
-# MCWFによる時間発展（100サンプル）
+# MCWFによる時間発展（1000サンプル）
 n_samples = 1000
 all_Pe = zeros(Float64, length(ts), n_samples)
 
@@ -220,9 +258,18 @@ plot!(ts, Pe_ED, label="ED", lw=2, ls=:dash, xlabel=L"\Omega t", ylabel=L"P_{\ma
 hline!([steadyPe(params)], label="steady state", ls=:dash)
 ```
 
+実行した結果は以下のようになります．
+統計誤差の範囲でEDとMCWFの結果がよく一致していることが分かります．
+
 ![](https://storage.googleapis.com/zenn-user-upload/45b058005a2c-20250529.png)
 
+## 最後に
 
+この記事では，開放量子系の数値計算を行う有効な手法であるMCWF法についてその原理と実際のコードの解説を行いました．
+作成したコードは，前回の記事のEDのものと合わせてGithubで公開していますので，興味のある方はご覧ください．
+記事を読まれた方のお役に立てば幸いです．
+
+@[card](https://github.com/Hiromu-USHIHARA/introMCWF.git)
 
 ## 参考文献
 1. G. Lindblad, "On the generators of quantum dynamical semigroups", Commun. Math. Phys. 48, 119-130 (1976).
