@@ -1,7 +1,18 @@
-このチュートリアルでは，開放量子系の数値シミュレーション手法である厳密対角化（exact diagonalization; ED）とモンテカルロ波動関数法（Monte Carlo wave function method; MCWF）を導入し，Juliaで実装します．
-今回はNo. 1として，扱う問題の導入と厳密対角化による数値計算をおこないます．
+---
+title: "開放量子系の数値計算入門（前編）"
+emoji: "📙"
+type: "tech"
+topics:
+  - "julia"
+  - "数値計算"
+  - "物理"
+  - "quantum"
+published: true
+published_at: "2025-05-23 23:06"
+---
 
-> このチュートリアルは[Zennでも公開](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b)していますので，数式がうまく表示されない場合はそちらをご覧ください．
+このチュートリアルでは，開放量子系の数値シミュレーション手法である厳密対角化（exact diagonalization; ED）とモンテカルロ波動関数法（Monte Carlo wave function method; MCWF）を導入し，Juliaで実装します．
+今回は前編として，扱う問題の導入と厳密対角化による数値計算をおこないます．
 
 ## 扱う問題
 
@@ -25,11 +36,10 @@ $$L=\sqrt\Gamma\sigma_-.$$
 
 ## モデルの定義
 
-まず，`model.jl`というファイルを作成して，２つの手法に共通のモデル定義を行います．
+まず，`src/model.jl`というファイルを作成して，２つの手法に共通のモデル定義を行います．
 `steadyPe`関数は解析的に得られる定常解の表式です．
 
-
-```julia
+```julia: src/model.jl
 using LinearAlgebra, SparseArrays
 
 mutable struct Parameters
@@ -103,11 +113,12 @@ $$-i[[H, 1]]_- + \sum_i\left(L_i\otimes L_i^\ast - \dfrac12[[L^\dag L_i, 1]]_+\r
 ### Juliaによる実装
 
 さて，以上の方法をJuliaで実装していきましょう．
+コードは`src/ED.jl`というファイルに記述します．
 
 まず，Liouville spaceの方法の中心となる，$1$次元と$2$次元の間の配列の変換を実装していきます．
 
 
-```julia
+```julia: src/ED.jl
 module sparse_transform_functions
     # 2Dのindex (m, n)に対し, M=N(m-1)+(n-1)+1を返す
     using SparseArrays
@@ -204,9 +215,9 @@ module sparse_Liouville_space
 end
 ```
 
-以下のコードを実行して，解析解と比較します．
+以下のコード（`examples/example1_ED.jl`）を実行して，解析解と比較します．
 
-```julia
+```julia: examples/example1_ED.jl
 include("../src/ED.jl")
 include("../src/model.jl")
 
@@ -237,18 +248,19 @@ hline!(fig, [steadyPe(params)], label="", ls=:dash)
 出力結果を下に示します．
 振動しながら定常状態に緩和していくダイナミクスが観察できます．
 
-![ED Results](assets/fig1_ED.png)
+![](https://storage.googleapis.com/zenn-user-upload/c6504d715bbf-20250522.png)
 
 
-## No. 1のまとめ
+## 前編のまとめ
 
 今回は開放量子系を記述するGKSL方程式を導入し，厳密対角化によるダイナミクスの可視化を行いました．
-次回の記事では，MCWF法による計算や２つの手法の比較を行う予定です．
+[後編](https://zenn.dev/hiromu_ushihara/articles/c6ef07f16666ee)では，MCWF法による計算や２つの手法の比較を行う予定です．
 
+@[card](https://zenn.dev/hiromu_ushihara/articles/c6ef07f16666ee)
 
 ## 参考文献
 1. G. Lindblad, "On the generators of quantum dynamical semigroups", Commun. Math. Phys. 48, 119-130 (1976).
 2. V. Gorini, A. Kossakowski, and E. C. G. Sudarshan, "Completely positive dynamical semigroups of N-level systems", J. Math. Phys. 17, 821 (1976).
-3. H.-P. Breuer and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, 2002).
+3. H.-P. Breuer, and F. Petruccione, "The Theory of Open Quantum Systems" (Oxford University Press, 2002).
 4. A. J. Daley, "Quantum trajectories and open many-body quantum systems", Adv. in Phys. 63, 77-149 (2014).
 5. J. A. Gyamfi, "Fundamentals of quantum mechanics in Liouville space", Eur. J. Phys. 41, 063002 (2020).
