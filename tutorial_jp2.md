@@ -107,8 +107,9 @@ $$\overline{\sigma(t+\delta t)}=\sigma(t)-i\delta t\left(H_{\mathrm{eff}}\sigma(
 
 実際に，Juliaで実装して動作を確認します．
 
-モデルの設定ファイル`src/model.jl`は[前回の記事](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b#%E3%83%A2%E3%83%87%E3%83%AB%E3%81%AE%E5%AE%9A%E7%BE%A9)と同じもの（`src/MCWF.jl`）を使用します．
+モデルの設定ファイル`src/model.jl`は[前回の記事](https://zenn.dev/hiromu_ushihara/articles/db67c435b9b95b#%E3%83%A2%E3%83%87%E3%83%AB%E3%81%AE%E5%AE%9A%E7%BE%A9)と同じものを使用します．
 
+MCWF法のアルゴリズムを`src/MCWF.jl`ファイルに実装します．
 
 ```julia: src/MCWF.jl
 module trajectory_approach
